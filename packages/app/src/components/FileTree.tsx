@@ -213,7 +213,7 @@ import {
 import { OK_SIDEBAR_DRAG_MIME, serializeSidebarDragPayload } from '@/lib/sidebar-drag';
 import { cn } from '@/lib/utils';
 import { joinWorkspacePath } from '@/lib/workspace-paths';
-import { spliceLazyFolderChildren } from './file-tree-merge';
+import { mergeRootEntriesAdditive, spliceLazyFolderChildren } from './file-tree-merge';
 import { OpenInAgentContextSubmenu } from './handoff/OpenInAgentContextSubmenu';
 import {
   buildFolderHandoffInput,
@@ -243,8 +243,7 @@ function focusEditorAfterRename(docName: string): void {
     if (!editor || editor.isDestroyed) return;
     try {
       editor.commands.focus();
-    } catch {
-    }
+    } catch {}
   });
 }
 
@@ -302,16 +301,14 @@ const MARKDOWN_FILE_ICON_SYMBOL = `<symbol id="${MARKDOWN_FILE_ICON_ID}" viewBox
 type IconNode = [string, Record<string, string>][];
 
 function iconNodeToSvg(iconNode: IconNode): string {
-  return (
-    iconNode
-      .map(([tag, { key: _, ...attrs }]) => {
-        const attrString = Object.entries(attrs)
-          .map(([k, v]) => `${k}="${v}"`)
-          .join(' ');
-        return `<${tag} ${attrString} />`;
-      })
-      .join('')
-  );
+  return iconNode
+    .map(([tag, { key: _, ...attrs }]) => {
+      const attrString = Object.entries(attrs)
+        .map(([k, v]) => `${k}="${v}"`)
+        .join(' ');
+      return `<${tag} ${attrString} />`;
+    })
+    .join('');
 }
 
 function createLucideSpriteSymbol(id: string, iconNode: IconNode): string {
@@ -1884,9 +1881,23 @@ export function FileTree({
           headers: SHOW_ALL_NDJSON_ACCEPT,
         });
         if (isNdjsonResponse(res)) {
-          const { entries, truncated } = await consumeShowAllStream(res);
-          if (!active) return;
           const bypassClientDotDrop = showHiddenFilesRef.current;
+          let paintedFirstBatch = false;
+          const { entries, truncated } = await consumeShowAllStream(res, {
+            onBatch: (batch) => {
+              if (!active || controller.signal.aborted) return;
+              const batchEntries = filterVisibleEntries(toFileEntries(batch), bypassClientDotDrop);
+              if (batchEntries.length === 0) return;
+              setDocuments((prev) => mergeRootEntriesAdditive(prev, batchEntries));
+              if (!paintedFirstBatch) {
+                paintedFirstBatch = true;
+                setError(null);
+                noteConnectivityRecovered();
+                setLoading(false);
+              }
+            },
+          });
+          if (!active) return;
           const serverEntries = filterVisibleEntries(toFileEntries(entries), bypassClientDotDrop);
           setDocuments((prev) =>
             spliceLazyFolderChildren(prev, '', serverEntries, recentLocalAddsRef.current),

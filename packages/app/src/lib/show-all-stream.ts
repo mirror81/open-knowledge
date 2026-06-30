@@ -1,4 +1,3 @@
-
 import { type DocumentListEntry, DocumentListEntrySchema } from '@inkeep/open-knowledge-core';
 
 export const SHOW_ALL_NDJSON_ACCEPT = { Accept: 'application/x-ndjson, application/json' } as const;
@@ -24,13 +23,22 @@ function isControlEvent(value: unknown): value is ControlEvent {
   return typeof value === 'object' && value !== null && 'type' in value;
 }
 
-export async function consumeShowAllStream(res: Response): Promise<ShowAllStreamResult> {
+export interface ConsumeShowAllStreamOptions {
+  onBatch?: (batch: DocumentListEntry[]) => void;
+}
+
+export async function consumeShowAllStream(
+  res: Response,
+  options: ConsumeShowAllStreamOptions = {},
+): Promise<ShowAllStreamResult> {
   const body = res.body;
   if (!body) throw new ShowAllStreamError('Show All Files stream had no response body.');
 
+  const { onBatch } = options;
   const reader = body.getReader();
   const decoder = new TextDecoder();
   const entries: DocumentListEntry[] = [];
+  let pendingBatch: DocumentListEntry[] = [];
   let truncated = false;
   let buffer = '';
 
@@ -58,10 +66,18 @@ export async function consumeShowAllStream(res: Response): Promise<ShowAllStream
     const result = DocumentListEntrySchema.safeParse(parsed);
     if (result.success) {
       entries.push(result.data);
+      pendingBatch.push(result.data);
     } else {
       console.warn('[show-all-stream] dropping schema-divergent entry line:', result.error.issues);
     }
     return false;
+  };
+
+  const flushBatch = (): void => {
+    if (!onBatch || pendingBatch.length === 0) return;
+    const batch = pendingBatch;
+    pendingBatch = [];
+    onBatch(batch);
   };
 
   try {
@@ -80,9 +96,11 @@ export async function consumeShowAllStream(res: Response): Promise<ShowAllStream
         }
         newlineIndex = buffer.indexOf('\n');
       }
+      flushBatch();
     }
     buffer += decoder.decode();
     if (!buffer.includes('\n')) ingestLine(buffer);
+    flushBatch();
   } finally {
     reader.releaseLock();
   }

@@ -1,4 +1,3 @@
-
 import { fileEntryToTreePath } from './file-tree-adapter';
 import type { FileEntry } from './file-tree-utils';
 
@@ -29,6 +28,22 @@ export function mergeAndPruneRecentLocalAdds(
   }
   if (preservedLocal.length === 0) return [...serverEntries];
   return [...serverEntries, ...preservedLocal];
+}
+
+export function mergeRootEntriesAdditive(
+  currentEntries: readonly FileEntry[],
+  incomingEntries: readonly FileEntry[],
+): FileEntry[] {
+  if (incomingEntries.length === 0) return [...currentEntries];
+  const seen = new Set(currentEntries.map((entry) => fileEntryToTreePath(entry)));
+  const merged = [...currentEntries];
+  for (const entry of incomingEntries) {
+    const treePath = fileEntryToTreePath(entry);
+    if (seen.has(treePath)) continue;
+    seen.add(treePath);
+    merged.push(entry);
+  }
+  return merged;
 }
 
 export function spliceLazyFolderChildren(
