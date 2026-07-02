@@ -72,7 +72,6 @@ import {
 } from './editors.ts';
 import { LAUNCH_JSON_PORT } from './ui.ts';
 
-
 const JSONC_PARSE_OPTIONS = { allowTrailingComma: true, disallowComments: false };
 
 const JSONC_INVALID_SYMBOL_CODE: number = 1;
@@ -115,7 +114,6 @@ function isCrlfDominant(text: string): boolean {
   const bareLf = (text.match(/\n/g) ?? []).length - crlf;
   return crlf >= bareLf;
 }
-
 
 const JSON_CONFIG_MAX_BYTES = 10 * 1024 * 1024;
 
@@ -235,7 +233,6 @@ function upsertJsonMcpConfig(
   return { kind: entryExists ? 'overwritten' : 'written' };
 }
 
-
 type TomlUpsertOutcome =
   | { kind: 'written' | 'overwritten' }
   | { kind: 'declined'; reason: McpDeclineReason };
@@ -293,7 +290,6 @@ function upsertTomlMcpConfig(
   }
   return { kind: result.existed ? 'overwritten' : 'written' };
 }
-
 
 type McpScope = 'user' | 'project' | 'both';
 
@@ -381,7 +377,6 @@ export async function resolveSharingMode(opts: {
   const prompt = opts.promptFn ?? promptSharingMode;
   return prompt(seed);
 }
-
 
 export interface EditorMcpResult {
   editorId: EditorId;
@@ -509,7 +504,6 @@ export type SharingOutcome =
       localOnlyRequested: boolean;
     };
 
-
 const LAUNCH_JSON_VERSION = '0.0.1';
 export const LAUNCH_CONFIG_NAME = 'open-knowledge-ui';
 
@@ -616,7 +610,6 @@ exec node "${resolveDevCliDistPath()}" start --ui-port "$UIPORT"`;
     };
   }
 }
-
 
 function isEditorTargetAvailable(target: EditorMcpTarget, cwd: string, home?: string): boolean {
   try {
@@ -794,7 +787,6 @@ function collectProjectConfig(
   };
 }
 
-
 export interface UserMcpConfigsOptions {
   editors: EditorId[];
   home?: string;
@@ -901,7 +893,6 @@ export function classifyExistingMcpEntry(
   );
 }
 
-
 export async function runInit(options: InitCommandOptions = {}): Promise<InitCommandResult> {
   const cwd = resolve(options.cwd ?? process.cwd());
   const resolution = resolveProjectRoot(cwd, { homeDir: options.home });
@@ -1000,8 +991,7 @@ export async function runInit(options: InitCommandOptions = {}): Promise<InitCom
       let configPath = '';
       try {
         configPath = target.configPath(projectRoot, options.home);
-      } catch {
-      }
+      } catch {}
       editorResults.push({
         editorId: target.id,
         label: target.label,
@@ -1054,7 +1044,6 @@ export async function runInit(options: InitCommandOptions = {}): Promise<InitCom
   const hasClaude = availableTargets.some((target) => target.id === 'claude');
   const launchJson =
     hasClaude && !skipMcp ? scaffoldLaunchJson(projectRoot, installOptions) : undefined;
-
 
   const installSkill = options.installUserSkill ?? installUserSkill;
   const skillInstall = await installSkill({ home: options.home });
@@ -1186,7 +1175,6 @@ function summarizeApplied(
     removed: result.removed,
   };
 }
-
 
 function declineReasonLabel(reason: McpDeclineReason | undefined): string {
   switch (reason) {
@@ -1371,7 +1359,6 @@ export function formatInitResult(result: InitCommandResult, cwd: string): string
     );
   }
 
-
   if (result.skillInstall) {
     lines.push('');
     lines.push(accent('User-global skill:'));
@@ -1394,7 +1381,6 @@ export function formatInitResult(result: InitCommandResult, cwd: string): string
         break;
     }
   }
-
 
   if (
     result.contentDirRequested !== undefined &&
@@ -1525,7 +1511,6 @@ export function buildInitJsonSummary(
     })),
   };
 }
-
 
 export function detectInstalledEditors(cwd: string, home?: string): EditorId[] {
   const detected: EditorId[] = [];
@@ -1685,7 +1670,6 @@ export function initCommand(): Command {
       },
     );
 }
-
 
 export function formatSharingOutcome(outcome: SharingOutcome, cwd: string): string[] {
   const lines: string[] = [];

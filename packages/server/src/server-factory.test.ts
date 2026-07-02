@@ -23,7 +23,6 @@ import { ensureProjectGit } from './project-git.ts';
 import { buildSyncCredentialArgs, createServer, type ServerInstance } from './server-factory.ts';
 import { initShadowRepo, shadowGit } from './shadow-repo.ts';
 
-
 interface LogEntry {
   level: 'info' | 'warn' | 'error' | 'debug';
   msg: string;
@@ -102,7 +101,6 @@ function captureAllLoggers(): {
     },
   };
 }
-
 
 describe('createServer().destroy() — graceful shutdown flush', () => {
   let tmpDir: string;
@@ -414,7 +412,6 @@ describe('createServer().destroy() — graceful shutdown flush', () => {
   });
 });
 
-
 describe('createServer() degraded signal', () => {
   let testProjectDir: string;
 
@@ -492,7 +489,6 @@ describe('createServer() degraded signal', () => {
     await srv.destroy();
   });
 });
-
 
 describe('createServer() — config-doc admission (US-005)', () => {
   let testProjectDir: string;
@@ -577,7 +573,6 @@ describe('createServer() — config-doc admission (US-005)', () => {
     await srv.destroy();
   });
 });
-
 
 async function waitFor(predicate: () => boolean, timeoutMs = 4_000): Promise<boolean> {
   const start = Date.now();
@@ -716,7 +711,6 @@ describe('createServer() — config file watcher (US-007)', () => {
     await srv.destroy();
   });
 });
-
 
 describe('createServer() — project-local file watcher → engine.setEnabled', () => {
   let testProjectDir: string;
@@ -1043,7 +1037,6 @@ describe('createServer() managed rename recovery', () => {
     await server.destroy();
   });
 });
-
 
 describe('createServer() server-lock integration (V0-1)', () => {
   let tmpDir: string;
@@ -1723,7 +1716,6 @@ describe('createServer() — config-doc admission guard', () => {
     }
   });
 });
-
 
 describe('createServer() — readProjectAutoSyncEnabled precedence', () => {
   let testProjectDir: string;

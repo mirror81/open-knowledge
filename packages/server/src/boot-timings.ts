@@ -1,4 +1,3 @@
-
 export interface BootTimings {
   startedAt: string;
   httpListenMs?: number;

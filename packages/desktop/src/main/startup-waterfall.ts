@@ -1,4 +1,3 @@
-
 export type WaterfallPhase =
   | 'appReady'
   | 'bootstrapDone'

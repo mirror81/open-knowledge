@@ -1,4 +1,3 @@
-
 import type { WorktreeSelectorEntry, WorktreeSelectorModel } from '@inkeep/open-knowledge-core';
 import { Plural, Trans, useLingui } from '@lingui/react/macro';
 import { Check, ChevronRight, GitBranch, Plus, Search } from 'lucide-react';

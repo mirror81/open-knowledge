@@ -1,4 +1,3 @@
-
 import type { WorktreeSelectorModel } from '@inkeep/open-knowledge-core';
 import type { RecentProjectEntry } from '@/lib/desktop-bridge-types';
 

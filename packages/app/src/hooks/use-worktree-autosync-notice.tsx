@@ -1,4 +1,3 @@
-
 import { Trans } from '@lingui/react/macro';
 import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';

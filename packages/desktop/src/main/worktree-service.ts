@@ -1,4 +1,3 @@
-
 import { execFile, execFileSync } from 'node:child_process';
 import { appendFileSync, readFileSync, realpathSync } from 'node:fs';
 import { isAbsolute, join, sep } from 'node:path';
@@ -56,8 +55,7 @@ function resolveAnchorToplevel(
   let anchor = anchorPath;
   try {
     anchor = realpathSync(anchorPath);
-  } catch {
-  }
+  } catch {}
   let best: string | null = null;
   for (const w of worktrees) {
     if (w.prunable) continue;
@@ -98,8 +96,7 @@ export async function createWorktree(args: CreateWorktreeArgs): Promise<Worktree
   clearRecentGitCache();
   try {
     await seedWorktreeAutoSync(worktreePath, mainRoot);
-  } catch {
-  }
+  } catch {}
   return { ok: true, path: worktreePath, created: true };
 }
 
@@ -176,8 +173,7 @@ async function computeBehindCounts(
         );
         const n = Number.parseInt(String(stdout).trim(), 10);
         if (Number.isFinite(n) && n >= 0) out[branch] = n;
-      } catch {
-      }
+      } catch {}
     }),
   );
   return out;
@@ -196,13 +192,11 @@ function ensureWorktreesExcluded(anchorPath: string): void {
     let current = '';
     try {
       current = readFileSync(excludePath, 'utf-8');
-    } catch {
-    }
+    } catch {}
     if (current.split('\n').some((l) => l.trim() === line)) return;
     const prefix = current.length > 0 && !current.endsWith('\n') ? '\n' : '';
     appendFileSync(excludePath, `${prefix}${line}\n`);
-  } catch {
-  }
+  } catch {}
 }
 
 function execFileSyncTrim(cmd: string, cmdArgs: string[], cwd: string): string | null {

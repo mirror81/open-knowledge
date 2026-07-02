@@ -1,7 +1,6 @@
 import { t } from '@lingui/core/macro';
 import type { OkDesktopBridge } from '@/lib/desktop-bridge-types';
 
-
 export function restartServerFailureMessage(reason: 'eperm' | 'other'): string {
   return reason === 'eperm'
     ? t`Couldn't restart the server — another process owns it. Quit other OpenKnowledge windows for this project, then try again.`

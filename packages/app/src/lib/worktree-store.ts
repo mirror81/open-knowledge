@@ -1,4 +1,3 @@
-
 import type { WorktreeSelectorModel } from '@inkeep/open-knowledge-core';
 
 export interface WorktreeStore {

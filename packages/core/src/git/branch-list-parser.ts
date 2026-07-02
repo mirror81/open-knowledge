@@ -1,4 +1,3 @@
-
 export function parseBranchList(stdout: string): string[] {
   if (stdout.length === 0) return [];
 

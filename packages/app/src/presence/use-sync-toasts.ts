@@ -16,8 +16,7 @@ export async function runDisconnectRestart(
     if (!result.ok) {
       toast.error(result.message, { id: TOAST_ID, duration: Infinity });
     }
-  } catch {
-  }
+  } catch {}
 }
 
 export function useSyncToasts(status: SyncStatus, activeDocName: string | null) {
